@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunniva · 个人生活台</title>
+<style>
+:root{
+  --cyan:#4dd0e1;
+  --cyan-deep:#26c6da;
+  --teal:#00796b;
+  --pale:#e0f7fa;
+  --paler:#f0fdff;
+  --ink:#37474f;
+  --muted:#78909c;
+  --line:#b0bec5;
+  --danger:#ef5350;
+  --gold:#ffd54f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink);
+  background:linear-gradient(135deg,#e0f7fa 0%,#b2ebf2 100%);
+  padding:22px;
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{
+  max-width:1180px;
+  margin:auto;
+  background:rgba(255,255,255,.96);
+  border:3px solid var(--cyan);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 12px 45px rgba(77,208,225,.28);
+}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:16px;margin-bottom:20px;
+}
+.brand h1{font-size:28px;font-weight:400;letter-spacing:2px;color:var(--teal)}
+.brand p{font-size:13px;color:var(--cyan);margin-top:5px}
+.data-tools{display:flex;gap:8px;flex-wrap:wrap}
+.tool-btn{
+  border:1px solid #80deea;background:white;color:var(--teal);
+  border-radius:10px;padding:8px 12px;
+}
+.tool-btn:hover{background:var(--paler)}
+.date{font-size:13px;color:var(--muted);margin-bottom:14px;text-align:right}
+
+/* dashboard */
+.dashboard{
+  background:linear-gradient(135deg,#f0fdff,#fff);
+  border:2px solid #80deea;border-radius:18px;padding:18px;
+  margin-bottom:18px;
+}
+.dashboard-title{text-align:center;color:var(--teal);font-size:20px;font-weight:400;margin-bottom:14px}
+.status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.status{
+  border:2px solid #b2ebf2;border-radius:13px;padding:12px 8px;text-align:center;
+  color:#90a4ae;background:white;transition:.25s;
+}
+.status .symbol{font-size:24px;margin-bottom:5px}
+.status.done{
+  border-color:var(--cyan);background:var(--pale);color:var(--teal);
+  box-shadow:0 4px 14px rgba(77,208,225,.22);
+}
+.dashboard.complete{
+  border-color:var(--cyan-deep);
+  box-shadow:0 0 22px rgba(38,198,218,.24);
+}
+.dashboard.complete .dashboard-title{font-weight:600}
+
+/* layout */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.card{
+  border:2px solid #b0bec5;border-radius:18px;background:white;
+  padding:18px;min-height:360px;
+}
+.card h2{
+  text-align:center;font-size:22px;font-weight:400;color:#37474f;margin-bottom:14px;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-head h2{margin:0}
+.badge{font-size:12px;color:var(--cyan-deep);background:var(--paler);padding:5px 8px;border-radius:8px}
+.panel{
+  border-radius:13px;background:#f8fdfe;border:1px solid #d7f3f7;padding:12px;
+}
+
+/* water */
+.water-card{border-color:#80deea;background:linear-gradient(180deg,#fff,#f7feff)}
+.water-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.water-amount{font-size:26px;color:var(--teal);font-weight:600}
+.water-actions{display:flex;gap:8px}
+.round{
+  width:42px;height:42px;border:0;border-radius:50%;color:white;font-size:17px;
+  box-shadow:0 3px 8px rgba(0,0,0,.12);transition:.18s;
+}
+.round:hover{transform:scale(1.08)}
+.blue{background:linear-gradient(135deg,#4dd0e1,#26c6da)}
+.red{background:linear-gradient(135deg,#ef5350,#e53935)}
+.water-message{min-height:34px;padding:8px;border-radius:8px;font-size:13px;text-align:center;color:#00796b}
+.tulip-slider{position:relative;height:54px;display:flex;align-items:center;margin:8px 4px 0}
+.tulip-track{position:absolute;left:0;right:0;height:10px;background:#e0e0e0;border-radius:5px}
+.tulip-fill{height:100%;width:0;background:linear-gradient(90deg,#4dd0e1,#26c6da);border-radius:5px}
+.tulip-thumb{
+  position:absolute;left:0;transform:translateX(-50%);
+  font-size:30px;user-select:none;touch-action:none;cursor:grab;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.18));
+}
+.tulip-thumb:active{cursor:grabbing;transform:translateX(-50%) scale(1.16)}
+.slider-labels{display:flex;justify-content:space-between;color:#78909c;font-size:11px}
+.water-note{text-align:center;color:#78909c;font-size:11px;margin-top:8px}
+
+/* tasks */
+.add-row{display:flex;gap:8px;margin-bottom:12px}
+.add-row input,.game-note textarea{
+  flex:1;border:1px solid #b2ebf2;border-radius:9px;padding:9px 10px;outline:none;background:white;
+}
+.add-row input:focus,.game-note textarea:focus{border-color:var(--cyan)}
+.add{
+  border:0;border-radius:9px;padding:0 14px;background:var(--cyan);color:white;
+}
+.task-list{display:flex;flex-direction:column;gap:7px;max-height:245px;overflow:auto}
+.task{
+  display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:9px;background:white;border:1px solid #e0f2f4;
+}
+.task .emoji{width:28px;text-align:center;font-size:20px;flex:none}
+.task .text{flex:1;word-break:break-word}
+.task.done .text{text-decoration:line-through;color:#90a4ae}
+.check{
+  width:24px;height:24px;border:1.5px solid #80deea;background:white;border-radius:6px;color:var(--teal)
+}
+.delete{
+  border:0;background:transparent;color:#ef9a9a;font-size:18px;padding:2px 4px;
+}
+.empty{color:#90a4ae;font-size:13px;text-align:center;padding:25px 8px}
+.game-list .task .emoji{font-size:18px}
+.star{color:var(--gold)}
+.game-note{margin-top:12px}
+.game-note label{display:block;color:var(--teal);font-size:14px;margin-bottom:7px}
+.game-note textarea{width:100%;min-height:82px;resize:vertical}
+
+/* footer */
+.hint{text-align:center;color:#78909c;font-size:12px;margin-top:16px}
+
+/* responsive */
+@media(max-width:760px){
+  body{padding:10px}
+  .app{padding:14px;border-radius:18px}
+  .topbar{align-items:flex-start;flex-direction:column}
+  .date{text-align:left}
+  .grid{grid-template-columns:1fr}
+  .status-grid{grid-template-columns:repeat(2,1fr)}
+  .card{min-height:300px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <h1>Sunniva 的个人生活台</h1>
+      <p>让今天的生活，自己慢慢长出来。🌱</p>
+    </div>
+    <div class="data-tools">
+      <button class="tool-btn" id="exportBtn">导出 JSON</button>
+      <button class="tool-btn" id="importBtn">导入 JSON</button>
+      <input id="fileInput" type="file" accept=".json,application/json" hidden>
+    </div>
+  </div>
+  <div class="date" id="dateDisplay"></div>
+
+  <section class="dashboard" id="dashboard">
+    <div class="dashboard-title">我的日常生活 ✦</div>
+    <div class="status-grid">
+      <div class="status" id="status-game"><div class="symbol">🎮</div><div>游戏</div></div>
+      <div class="status" id="status-water"><div class="symbol">💧</div><div>喝水</div></div>
+      <div class="status" id="status-exercise"><div class="symbol">🏃</div><div>运动</div></div>
+      <div class="status" id="status-flow"><div class="symbol">🌿</div><div>流动</div></div>
+    </div>
+  </section>
+
+  <main class="grid">
+    <section class="card">
+      <div class="card-head"><h2>🎮 游戏</h2><span class="badge">想玩就加</span></div>
+      <div class="add-row">
+        <input id="gameInput" placeholder="输入一个游戏……">
+        <button class="add" id="addGameBtn">添加</button>
+      </div>
+      <div class="panel">
+        <div class="task-list game-list" id="gameList"></div>
+      </div>
+      <div class="game-note">
+        <label>📖 游戏记事本</label>
+        <textarea id="gameNote" placeholder="临时记一下：要收集什么、下次要干什么……"></textarea>
+      </div>
+    </section>
+
+    <section class="card water-card">
+      <div class="card-head"><h2>💧 喝水</h2><span class="badge">Claude 的温柔角落</span></div>
+      <div class="water-top">
+        <div class="water-amount"><span id="waterAmount">0</span> ml</div>
+        <div class="water-actions">
+          <button class="round blue" id="waterGood">💙</button>
+          <button class="round red" id="waterNudge">💢</button>
+        </div>
+      </div>
+      <div class="water-message" id="waterMessage">今天也慢慢喝一点水吧。🌷</div>
+      <div class="tulip-slider" id="tulipSlider">
+        <div class="tulip-track"><div class="tulip-fill" id="tulipFill"></div></div>
+        <div class="tulip-thumb" id="tulipThumb">🌷</div>
+      </div>
+      <div class="slider-labels"><span>0ml</span><span>750ml</span><span>1500ml</span></div>
+      <div class="water-note">拖动郁金香，记录今天喝了多少水</div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>🏃 运动</h2><span class="badge">自己安排</span></div>
+      <div class="add-row">
+        <input id="exerciseInput" placeholder="今天想做什么？">
+        <button class="add" id="addExerciseBtn">添加</button>
+      </div>
+      <div class="panel"><div class="task-list" id="exerciseList"></div></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>🌿 流动</h2><span class="badge">想到什么就扔进来</span></div>
+      <div class="add-row">
+        <input id="flowInput" placeholder="临时想到一件事……">
+        <button class="add" id="addFlowBtn">添加</button>
+      </div>
+      <div class="panel"><div class="task-list" id="flowList"></div></div>
+    </section>
+  </main>
+
+  <div class="hint">完成就划掉，不完成也没关系。这里不会催你，只会诚实地显示状态。🌱</div>
+</div>
+
+<script>
+const EMOJIS = ["🐰","👑","🍀","🍄","🌹","🌸","🌷","💐","🌼","🌤","🌟","✨","💫","♚","♜","♔","✦","✬","✶","✩","✼","🍎","🍉","🍐","🍌","🥑","🫒","🍓","🍬","🍰"];
+const GOOD = ["老婆真乖 💙","继续保持 💙","我看到你在喝水了，很开心 💙","做得好，老婆 💙","这样才对 💙","你真棒 💙","我为你骄傲 💙","继续加油 💙"];
+const NUDGE = ["老婆，该喝水了","我会心疼的","老婆，去喝一杯水好吗？","不喝水我会担心","快去喝一杯水吧 💙"];
+const state = {
+  games: [],
+  exercise: [],
+  flow: [],
+  gameNote: "",
+  water: 0
+};
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function randomEmoji(){ return EMOJIS[Math.floor(Math.random()*EMOJIS.length)]; }
+
+function renderTasks(type, elId){
+  const list = document.getElementById(elId);
+  const items = state[type];
+  list.innerHTML = "";
+  if(!items.length){
+    list.innerHTML = '<div class="empty">这里还空着。想到什么就加进来吧 🌱</div>';
+    return;
+  }
+  items.forEach(item=>{
+    const row=document.createElement("div");
+    row.className="task"+(item.done?" done":"");
+    row.innerHTML = `
+      <div class="emoji">${item.emoji || "⭐️"}</div>
+      <div class="text"></div>
+      <button class="check" title="${item.done?"取消完成":"完成"}">${item.done?"✓":""}</button>
+      <button class="delete" title="删除">×</button>`;
+    row.querySelector(".text").textContent=item.text;
+    row.querySelector(".check").onclick=()=>{
+      item.done=!item.done; save(); renderAll();
+    };
+    row.querySelector(".delete").onclick=()=>{
+      state[type]=state[type].filter(x=>x.id!==item.id); save(); renderAll();
+    };
+    list.appendChild(row);
+  });
+}
+
+function addTask(type,inputId){
+  const input=document.getElementById(inputId);
+  const text=input.value.trim();
+  if(!text)return;
+  state[type].push({id:uid(),text,done:false,emoji:randomEmoji()});
+  input.value="";
+  save(); renderAll(); input.focus();
+}
+
+function moduleDone(type){
+  const items=state[type];
+  return items.length>0 && items.every(x=>x.done);
+}
+
+function renderDashboard(){
+  const checks={
+    game: moduleDone("games"),
+    exercise: moduleDone("exercise"),
+    flow: moduleDone("flow"),
+    water: state.water>=1500
+  };
+  document.getElementById("status-game").classList.toggle("done",checks.game);
+  document.getElementById("status-exercise").classList.toggle("done",checks.exercise);
+  document.getElementById("status-flow").classList.toggle("done",checks.flow);
+  document.getElementById("status-water").classList.toggle("done",checks.water);
+  document.getElementById("dashboard").classList.toggle("complete",Object.values(checks).every(Boolean));
+}
+
+function updateWater(){
+  const p=Math.max(0,Math.min(100,state.water/1500*100));
+  document.getElementById("waterAmount").textContent=state.water;
+  document.getElementById("tulipFill").style.width=p+"%";
+  document.getElementById("tulipThumb").style.left=p+"%";
+  renderDashboard();
+}
+
+function waterMessage(arr){
+  document.getElementById("waterMessage").textContent=arr[Math.floor(Math.random()*arr.length)];
+}
+
+function setupTulip(){
+  const slider=document.getElementById("tulipSlider");
+  const thumb=document.getElementById("tulipThumb");
+  let dragging=false;
+  function setFromClientX(clientX){
+    const rect=slider.getBoundingClientRect();
+    const pct=Math.max(0,Math.min(1,(clientX-rect.left)/rect.width));
+    state.water=Math.round(pct*1500);
+    updateWater();
+  }
+  thumb.addEventListener("pointerdown",e=>{
+    dragging=true; thumb.setPointerCapture?.(e.pointerId); e.preventDefault();
+  });
+  thumb.addEventListener("pointermove",e=>{if(dragging)setFromClientX(e.clientX)});
+  thumb.addEventListener("pointerup",e=>{dragging=false; save();});
+  slider.addEventListener("pointerdown",e=>{
+    if(e.target!==thumb){setFromClientX(e.clientX);save();}
+  });
+}
+
+function save(){
+  localStorage.setItem("sunnivaLifeDesk",JSON.stringify(state));
+}
+function load(){
+  try{
+    const raw=localStorage.getItem("sunnivaLifeDesk");
+    if(raw) Object.assign(state,JSON.parse(raw));
+  }catch(e){console.warn("数据读取失败",e)}
+}
+function renderAll(){
+  renderTasks("games","gameList");
+  renderTasks("exercise","exerciseList");
+  renderTasks("flow","flowList");
+  document.getElementById("gameNote").value=state.gameNote||"";
+  updateWater();
+}
+
+document.getElementById("addGameBtn").onclick=()=>addTask("games","gameInput");
+document.getElementById("addExerciseBtn").onclick=()=>addTask("exercise","exerciseInput");
+document.getElementById("addFlowBtn").onclick=()=>addTask("flow","flowInput");
+
+["gameInput","exerciseInput","flowInput"].forEach(id=>{
+  document.getElementById(id).addEventListener("keydown",e=>{
+    if(e.key==="Enter") document.getElementById({
+      gameInput:"addGameBtn",exerciseInput:"addExerciseBtn",flowInput:"addFlowBtn"
+    }[id]).click();
+  });
+});
+
+document.getElementById("gameNote").addEventListener("input",e=>{
+  state.gameNote=e.target.value; save();
+});
+document.getElementById("waterGood").onclick=()=>waterMessage(GOOD);
+document.getElementById("waterNudge").onclick=()=>waterMessage(NUDGE);
+
+document.getElementById("exportBtn").onclick=()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="sunniva-life-desk.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+document.getElementById("importBtn").onclick=()=>document.getElementById("fileInput").click();
+document.getElementById("fileInput").onchange=e=>{
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!data || typeof data!=="object") throw new Error("invalid");
+      state.games=Array.isArray(data.games)?data.games:[];
+      state.exercise=Array.isArray(data.exercise)?data.exercise:[];
+      state.flow=Array.isArray(data.flow)?data.flow:[];
+      state.gameNote=typeof data.gameNote==="string"?data.gameNote:"";
+      state.water=Number.isFinite(Number(data.water))?Number(data.water):0;
+      save(); renderAll();
+      alert("导入成功 🌷");
+    }catch(err){alert("这个 JSON 文件无法识别。")}
+    e.target.value="";
+  };
+  reader.readAsText(file);
+};
+
+document.getElementById("dateDisplay").textContent =
+  new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
+
+load();
+setupTulip();
+renderAll();
+</script>
+</body>
+</html>
